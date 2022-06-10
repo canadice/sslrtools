@@ -9,10 +9,10 @@ Description: Package provides functions and tools for the Simulation Soccer Leag
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Imports: 
-  httr, jsonlite, rvest, RCurl, dplyr, 
-  plyr, tidyr, janitor, tibble,
+  httr, jsonlite, rvest, dplyr, 
+  plyr, tidyr, tidyselect, janitor, tibble,
   purrr, ggplot2, ggnewscale, 
   RColorBrewer, ggpubr, scales,
   png, grid, magick, rsvg, lubridate, 

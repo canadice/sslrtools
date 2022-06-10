@@ -143,7 +143,7 @@ playerScraper <-
       stringr::str_split(pattern = ":", simplify = TRUE) %>%
       matrix(ncol = 2) %>%
       data.frame() %>%
-      mutate(
+      dplyr::mutate(
         X2 = stringr::str_squish(X2)
       ) %>%
       tidyr::pivot_wider(
@@ -172,7 +172,7 @@ playerScraper <-
 
       postData <-
         postData %>%
-        relocate(
+        dplyr::relocate(
           `Preferred Position`,
           .after = Position
         )
@@ -221,9 +221,9 @@ playerScraper <-
       playerTeam <-
         playerTeam %>%
         dplyr::add_row() %>%
-        mutate(
+        dplyr::mutate(
           team =
-            case_when(
+            dplyr::case_when(
               stringr::str_detect(forum, pattern = "Retired") ~ "Retired",
               stringr::str_detect(forum, pattern = "Prospect") ~ "Prospect",
               TRUE ~ "FA"
@@ -235,22 +235,22 @@ playerScraper <-
 
     userData <-
       topic %>%
-      html_elements(".normalname a") %>%
-      nth(1) %>%
-      html_attr("href") %>%
-      read_html() %>%
-      html_elements("div.row2") %>%
-      html_text() %>%
-      .[str_detect(., pattern = "Last Post")] %>%
-      str_split(pattern = ": ", simplify = TRUE) %>%
+      rvest::html_elements(".normalname a") %>%
+      dplyr::nth(1) %>%
+      rvest::html_attr("href") %>%
+      xml2::read_html() %>%
+      rvest::html_elements("div.row2") %>%
+      rvest::html_text() %>%
+      .[stringr::str_detect(., pattern = "Last Post")] %>%
+      stringr::str_split(pattern = ": ", simplify = TRUE) %>%
       .[,2] %>%
-      str_squish()
+      stringr::str_squish()
 
     postData$lastPost <- userData
 
     postData <-
       postData %>%
-      mutate(
+      dplyr::mutate(
         lastPost =
           dplyr::case_when(
             stringr::str_detect(lastPost, pattern = "minute") ~ lubridate::today(),
@@ -268,15 +268,15 @@ playerScraper <-
 
     postData$Username <-
       topic %>%
-      html_elements(".normalname") %>%
-      nth(1) %>%
-      html_text()
+      rvest::html_elements(".normalname") %>%
+      dplyr::nth(1) %>%
+      rvest::html_text()
 
     postData$`All Traits` <-
       paste(
         postData %>%
-          select(
-            contains("Trait")
+          dplyr::select(
+            tidyselect::contains("Trait")
           ),
         collapse = " \\ "
       )
@@ -286,10 +286,10 @@ playerScraper <-
 
     postData <-
       postData %>%
-      select(
-        !starts_with("Trait")
+      dplyr::select(
+        !tidyselect::starts_with("Trait")
       ) %>%
-      relocate(
+      dplyr::relocate(
         c(
           Class,
           TPE,
@@ -298,11 +298,11 @@ playerScraper <-
         ),
         .after = Username
       ) %>%
-      relocate(
+      dplyr::relocate(
         Position,
         .before = `Preferred Position`
       ) %>%
-      relocate(
+      dplyr::relocate(
         `All Traits`,
         .before = lastPost
       )
