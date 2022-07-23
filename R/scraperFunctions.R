@@ -40,7 +40,7 @@ teamLinks <- function(){
       "https://simsoccer.jcink.net/index.php?showforum=101",
       "https://simsoccer.jcink.net/index.php?showforum=98",
       "https://simsoccer.jcink.net/index.php?showforum=117",
-      "https://simsoccer.jcink.net/index.php?showforum=120"
+      "https://simsoccer.jcink.net/index.php?showforum=120",
       "https://simsoccer.jcink.net/index.php?showforum=124",
       "https://simsoccer.jcink.net/index.php?showforum=126"
     ) %>%
@@ -312,3 +312,140 @@ playerScraper <-
     return(postData)
   }
 
+
+#' Scrapes all posts from an AC page
+#'
+#' @export
+#'
+#' @returns
+#' Returns a vector of all the AC links
+#'
+
+activityCheckLinks <-
+  function() {
+    ## The url to the Activity Check forum
+    url <-
+      "https://simsoccer.jcink.net/index.php?showforum=7" %>%
+      c(
+        .,
+        paste(., "&st=15", sep = ""),
+        paste(., "&st=30", sep = ""),
+        paste(., "&st=45", sep = ""),
+        paste(., "&st=60", sep = ""),
+        paste(., "&st=75", sep = "")
+      )
+
+    lapply(
+      X = url,
+      FUN = function(page){
+        forum <- read_html(page)
+
+        link <-
+          forum %>%
+          rvest::html_elements(".topic-row") %>%
+          rvest::html_elements(".row4 [href]")
+
+        AClinks <-
+          link %>%
+          rvest::html_text() %>%
+          stringr::str_detect("Activity Check") %>%
+          which()
+
+        ACs <-
+          link[AClinks] %>%
+          rvest::html_attr("href") %>%
+          .[
+            stringr::str_detect(string = ., pattern = "simsoccer")
+          ] %>%
+          unique() %>%
+          lapply(
+            .,
+            FUN = function(x){
+              paste(x,
+                    paste("&st=", seq(15, 250, by = 15), sep = ""),
+                    sep = ""
+              )
+            }
+          ) %>%
+          unlist() %>%
+          return()
+      }
+    ) %>%
+      unlist() %>%
+      unique()
+  }
+
+#' Scrapes all ACs and
+#'
+#' @param AC A link to a specific AC page
+#'
+#' @export
+#'
+#' @returns
+#' Returns a data frame of all the AC posts, by whom and when
+#'
+
+activityCheckPosts <-
+  function(AC) {
+
+    ## Reads the current AC link
+    current <- read_html(AC)
+
+    nr <-
+      current %>%
+      rvest::html_elements(".topic-title") %>%
+      rvest::html_text2()
+
+    users <-
+      current %>%
+      rvest::html_elements(".normalname span") %>%
+      rvest::html_text2()
+
+    post <-
+      current %>%
+      rvest::html_elements(".postcolor") %>%
+      rvest::html_text2() %>%
+      stringr::str_remove_all(pattern = "emo&:[a-z]+:endemo") %>%
+      stringr::str_squish()
+
+    time <-
+      current %>%
+      rvest::html_elements(".row4 .postdetails") %>%
+      rvest::html_text2() %>%
+      stringr::str_remove_all("Posted: ")
+
+    data.frame(
+      AC = rep(nr, times = length(users)),
+      User = users,
+      Post = post,
+      Time = time
+    )
+  }
+
+
+#' Scrapes the claim threads
+#'
+#' @param thread A link to the claim thread
+#'
+#' @export
+#'
+#' @returns
+#' Returns a data frame of all the AC posts, by whom and when
+#'
+
+claimThreadPost <-
+  function(thread) {
+
+    ## Reads the current AC link
+    current <- read_html(thread)
+
+    threads <-
+      current %>%
+      rvest::html_elements(".postcolor") %>%
+      rvest::html_text2()
+
+
+
+
+
+  }
