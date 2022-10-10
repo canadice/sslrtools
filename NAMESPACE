@@ -2,6 +2,8 @@
 
 export(activityCheckLinks)
 export(activityCheckPosts)
+export(affiliateLinks)
+export(affiliatePosts)
 export(claimThreadPost)
 export(playerLinkScraper)
 export(playerScraper)
