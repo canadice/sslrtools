@@ -158,9 +158,9 @@ playerScraper <-
       rvest::html_elements(".postdetails") %>%
       rvest::html_text() %>%
       dplyr::nth(1) %>%
-      stringr::str_split(pattern = ": ", simplify = TRUE) %>%
+      stringr::str_split(pattern = ": |,", simplify = TRUE) %>%
       dplyr::nth(2) %>%
-      lubridate::as_date(format = "%b %d %Y")
+      lubridate::as_date(format = "bdY")
 
     postData$Class <-
       topic %>%
@@ -259,7 +259,7 @@ playerScraper <-
             stringr::str_detect(lastPost, pattern = "hour") ~ lubridate::today(),
             stringr::str_detect(lastPost, pattern = "Today") ~ lubridate::today(),
             stringr::str_detect(lastPost, pattern = "Yesterday") ~ lubridate::today()-1,
-            TRUE ~ lastPost %>% stringr::str_extract(pattern = "[0-9]+-[0-9]+-[0-9]+") %>% lubridate::as_date(format = "mdY")
+            TRUE ~ lastPost %>% stringr::str_extract(pattern = "[0-9]+-[0-9]+-[0-9]+") %>% lubridate::as_date(format = "bdY")
           ),
         Active =
           dplyr::case_when(
