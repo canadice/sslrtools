@@ -259,7 +259,7 @@ playerScraper <-
             stringr::str_detect(lastPost, pattern = "hour") ~ lubridate::today(),
             stringr::str_detect(lastPost, pattern = "Today") ~ lubridate::today(),
             stringr::str_detect(lastPost, pattern = "Yesterday") ~ lubridate::today()-1,
-            TRUE ~ lubridate::as_date(lastPost, format = "%b %d %Y")
+            TRUE ~ lastPost %>% stringr::str_extract(pattern = "[0-9]+-[0-9]+-[0-9]+") %>% lubridate::as_date(format = "mdY")
           ),
         Active =
           dplyr::case_when(
@@ -313,7 +313,7 @@ playerScraper <-
   }
 
 
-#' Scrapes all posts from an AC page
+#' Scrapes most recent AC Thread
 #'
 #' @export
 #'
@@ -324,55 +324,21 @@ playerScraper <-
 activityCheckLinks <-
   function() {
     ## The url to the Activity Check forum
-    url <-
-      "https://simsoccer.jcink.net/index.php?showforum=7" %>%
-      c(
-        .,
-        paste(., "&st=15", sep = ""),
-        paste(., "&st=30", sep = ""),
-        paste(., "&st=45", sep = ""),
-        paste(., "&st=60", sep = ""),
-        paste(., "&st=75", sep = "")
-      )
+    recentAC <-
+      read_html("https://simsoccer.jcink.net/index.php?showforum=7") %>%
+      rvest::html_elements(".topic-row") %>%
+      rvest::html_elements(".row4 [href]")
 
-    lapply(
-      X = url,
-      FUN = function(page){
-        forum <- read_html(page)
+    firstCut <- recentAC %>% html_attr("href") %>% str_detect("who_posted") %>% which() %>% nth(1)
 
-        link <-
-          forum %>%
-          rvest::html_elements(".topic-row") %>%
-          rvest::html_elements(".row4 [href]")
+    recentAC <-
+      recentAC %>%
+      .[
+        1:(firstCut-1)
+      ] %>%
+      rvest::html_attr(name = "href")
 
-        AClinks <-
-          link %>%
-          rvest::html_text() %>%
-          stringr::str_detect("Activity Check") %>%
-          which()
-
-        ACs <-
-          link[AClinks] %>%
-          rvest::html_attr("href") %>%
-          .[
-            stringr::str_detect(string = ., pattern = "simsoccer")
-          ] %>%
-          unique() %>%
-          lapply(
-            .,
-            FUN = function(x){
-              paste(x,
-                    paste("&st=", seq(15, 250, by = 15), sep = ""),
-                    sep = ""
-              )
-            }
-          ) %>%
-          unlist() %>%
-          return()
-      }
-    ) %>%
-      unlist() %>%
-      unique()
+    return(recentAC)
   }
 
 #' Scrapes all ACs and
@@ -422,7 +388,7 @@ activityCheckPosts <-
     )
   }
 
-#' Scrapes all posts from an Affiliate page
+#' Scrapes most recent Affiliate thread
 #'
 #' @export
 #'
@@ -432,56 +398,21 @@ activityCheckPosts <-
 
 affiliateLinks <-
   function() {
-    ## The url to the Affiliate forum
-    url <-
-      "https://simsoccer.jcink.net/index.php?showforum=34" %>%
-      c(
-        .,
-        paste(., "&st=15", sep = ""),
-        paste(., "&st=30", sep = ""),
-        paste(., "&st=45", sep = ""),
-        paste(., "&st=60", sep = ""),
-        paste(., "&st=75", sep = "")
-      )
+    recentAffiliate <-
+      read_html("https://simsoccer.jcink.net/index.php?showforum=34") %>%
+      rvest::html_elements(".topic-row") %>%
+      rvest::html_elements(".row4 [href]")
 
-    lapply(
-      X = url,
-      FUN = function(page){
-        forum <- read_html(page)
+    firstCut <- recentAffiliate %>% html_attr("href") %>% str_detect("who_posted") %>% which() %>% nth(1)
 
-        link <-
-          forum %>%
-          rvest::html_elements(".topic-row") %>%
-          rvest::html_elements(".row4 [href]")
+    recentAffiliate <-
+      recentAffiliate %>%
+      .[
+        1:(firstCut-1)
+      ] %>%
+      rvest::html_attr(name = "href")
 
-        AClinks <-
-          link %>%
-          rvest::html_text() %>%
-          stringr::str_detect("Affiliate Point Task Thread") %>%
-          which()
-
-        ACs <-
-          link[AClinks] %>%
-          rvest::html_attr("href") %>%
-          .[
-            stringr::str_detect(string = ., pattern = "simsoccer")
-          ] %>%
-          unique() %>%
-          lapply(
-            .,
-            FUN = function(x){
-              paste(x,
-                    paste("&st=", seq(15, 250, by = 15), sep = ""),
-                    sep = ""
-              )
-            }
-          ) %>%
-          unlist() %>%
-          return()
-      }
-    ) %>%
-      unlist() %>%
-      unique()
+    return(recentAffiliate)
   }
 
 #' Scrapes all Affiliates and
