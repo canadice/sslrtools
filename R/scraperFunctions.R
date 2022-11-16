@@ -259,7 +259,7 @@ playerScraper <-
             stringr::str_detect(lastPost, pattern = "hour") ~ lubridate::today(),
             stringr::str_detect(lastPost, pattern = "Today") ~ lubridate::today(),
             stringr::str_detect(lastPost, pattern = "Yesterday") ~ lubridate::today()-1,
-            TRUE ~ lastPost %>% stringr::str_extract(pattern = "[0-9]+-[0-9]+-[0-9]+") %>% lubridate::as_date(format = "bdY")
+            TRUE ~ lastPost %>% stringr::str_split(pattern = ",", simplify = TRUE) %>% nth(1) %>% lubridate::as_date(format = "bdY")
           ),
         Active =
           dplyr::case_when(
