@@ -2,7 +2,7 @@
 % Please edit documentation in R/scraperFunctions.R
 \name{activityCheckLinks}
 \alias{activityCheckLinks}
-\title{Scrapes all posts from an AC page}
+\title{Scrapes most recent AC Thread}
 \usage{
 activityCheckLinks()
 }
@@ -10,5 +10,5 @@ activityCheckLinks()
 Returns a vector of all the AC links
 }
 \description{
-Scrapes all posts from an AC page
+Scrapes most recent AC Thread
 }

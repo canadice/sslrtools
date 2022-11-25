@@ -2,7 +2,7 @@
 % Please edit documentation in R/scraperFunctions.R
 \name{affiliateLinks}
 \alias{affiliateLinks}
-\title{Scrapes all posts from an Affiliate page}
+\title{Scrapes most recent Affiliate thread}
 \usage{
 affiliateLinks()
 }
@@ -10,5 +10,5 @@ affiliateLinks()
 Returns a vector of all the Affiliate links
 }
 \description{
-Scrapes all posts from an Affiliate page
+Scrapes most recent Affiliate thread
 }
