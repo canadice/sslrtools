@@ -11,7 +11,7 @@
 #' )
 
 readAPI <- function(url, ...){
-  require("dplyr")
+  require(dplyr)
 
   temp <-
     url %>%
