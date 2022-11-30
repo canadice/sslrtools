@@ -15,7 +15,7 @@ Imports:
   plyr, tidyr, tidyselect, janitor, tibble,
   purrr, ggplot2, ggnewscale, 
   RColorBrewer, ggpubr, scales,
-  png, grid, magick, rsvg, lubridate, 
+  grid, lubridate, 
   stringr, stringi, googlesheets4, xml2,
   parallel, fuzzyjoin, grDevices, rlang, DBI,
   dbplyr, RSQLite
