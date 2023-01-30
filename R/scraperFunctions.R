@@ -137,7 +137,9 @@ playerScraper <-
     postData <-
       topic %>%
       rvest::html_elements(".post2") %>%
-      dplyr::nth(2) %>%
+      .[2] %>%
+      # ## Changes to dplyr 1.1.0 removes this functionality.
+      # dplyr::nth(2) %>%
       rvest::html_elements(".postcolor") %>%
       rvest::html_text2() %>%
       stringr::str_split(pattern = "\\n") %>%
@@ -161,7 +163,9 @@ playerScraper <-
       rvest::html_text() %>%
       dplyr::nth(1) %>%
       stringr::str_split(pattern = ": |,", simplify = TRUE) %>%
-      dplyr::nth(2) %>%
+      .[,2] %>%
+      # ## Changes in dplyr 1.1.0
+      # dplyr::nth(2) %>%
       {
         if(packageVersion("lubridate") == '1.9.0') {
           lubridate::as_date(., format = "bdY")
@@ -169,9 +173,6 @@ playerScraper <-
           lubridate::as_date(., format = "%b %d %Y")
         }
       }
-
-
-
 
     postData$Class <-
       topic %>%
@@ -196,7 +197,9 @@ playerScraper <-
       rvest::html_elements(".topic-title") %>%
       rvest::html_text() %>%
       stringr::str_split(pattern = " - ", simplify = TRUE) %>%
-      dplyr::nth(2) %>%
+      .[,2] %>%
+      # ## Changes in dplyr 1.1.0
+      # dplyr::nth(2) %>%
       c()
 
     postData$TPE <-
@@ -204,7 +207,9 @@ playerScraper <-
       rvest::html_elements(".topic-desc") %>%
       rvest::html_text() %>%
       stringr::str_split(pattern = ":", simplify = TRUE) %>%
-      dplyr::nth(2) %>%
+      .[,2] %>%
+      # ## Changes in dplyr 1.1.0
+      # dplyr::nth(2) %>%
       stringr::str_squish() %>%
       as.numeric()
 
@@ -249,7 +254,9 @@ playerScraper <-
     userData <-
       topic %>%
       rvest::html_elements(".normalname a") %>%
-      dplyr::nth(1) %>%
+      .[1] %>%
+      # ## Changes in dplyr 1.1.0
+      # dplyr::nth(1) %>%
       rvest::html_attr("href") %>%
       xml2::read_html() %>%
       rvest::html_elements("div.row2") %>%
@@ -272,7 +279,7 @@ playerScraper <-
             stringr::str_detect(lastPost, pattern = "Yesterday") ~ lubridate::today()-1,
             TRUE ~ lastPost %>%
               stringr::str_split(pattern = ",", simplify = TRUE) %>%
-              nth(1) %>%
+              .[1] %>%
               {
                 if(packageVersion("lubridate") == '1.9.0') {
                   lubridate::as_date(., format = "bdY")
@@ -291,7 +298,9 @@ playerScraper <-
     postData$Username <-
       topic %>%
       rvest::html_elements(".normalname") %>%
-      dplyr::nth(1) %>%
+      .[1] %>%
+      # ## Changes in dplyr 1.1.0
+      # dplyr::nth(1) %>%
       rvest::html_text()
 
     postData$`All Traits` <-
