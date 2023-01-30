@@ -162,7 +162,16 @@ playerScraper <-
       dplyr::nth(1) %>%
       stringr::str_split(pattern = ": |,", simplify = TRUE) %>%
       dplyr::nth(2) %>%
-      lubridate::as_date(format = "%b %d %Y")
+      {
+        if(packageVersion("lubridate") == '1.9.0') {
+          lubridate::as_date(., format = "bdY")
+        } else {
+          lubridate::as_date(., format = "%b %d %Y")
+        }
+      }
+
+
+
 
     postData$Class <-
       topic %>%
@@ -264,7 +273,13 @@ playerScraper <-
             TRUE ~ lastPost %>%
               stringr::str_split(pattern = ",", simplify = TRUE) %>%
               nth(1) %>%
-              lubridate::as_date(format = "%b %d %Y")
+              {
+                if(packageVersion("lubridate") == '1.9.0') {
+                  lubridate::as_date(., format = "bdY")
+                } else {
+                  lubridate::as_date(., format = "%b %d %Y")
+                }
+              }
           ),
         Active =
           dplyr::case_when(
