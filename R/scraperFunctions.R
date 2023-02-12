@@ -354,18 +354,39 @@ activityCheckLinks <-
   function() {
     ## The url to the Activity Check forum
     recentAC <-
-      read_html("https://simsoccer.jcink.net/index.php?showforum=7") %>%
+      xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=7") %>%
       rvest::html_elements(".topic-row") %>%
-      rvest::html_elements(".row4 [href]")
+      rvest::html_elements(".row4 [href]") %>%
+      rvest::html_attr("href")
 
-    firstCut <- recentAC %>% html_attr("href") %>% str_detect("who_posted") %>% which() %>% nth(1)
+    firstCut <-
+      recentAC %>%
+      stringr::str_detect("who_posted") %>%
+      which() %>%
+      nth(1)
+
+    maxLink <-
+      recentAC[firstCut - 1] %>%
+      stringr::str_extract(pattern = "&showtopic.+")
+
+    minLink <-
+      recentAC[1] %>%
+      stringr::str_extract(pattern = "&showtopic.+")
 
     recentAC <-
-      recentAC %>%
+      paste(
+        "https://simsoccer.jcink.net/index.php?",
+        minLink,
+        paste(
+          "&st=",
+          seq(0, 300, by = 15),
+          sep = ""
+        ),
+        sep = ""
+      ) %>%
       .[
-        1:(firstCut-1)
-      ] %>%
-      rvest::html_attr(name = "href")
+        1:((stringr::str_detect(string = ., pattern = maxLink)) %>% which())
+      ]
 
     return(recentAC)
   }
@@ -384,7 +405,7 @@ activityCheckPosts <-
   function(AC) {
 
     ## Reads the current AC link
-    current <- read_html(AC)
+    current <- xml2::read_html(AC)
 
     nr <-
       current %>%
@@ -409,11 +430,24 @@ activityCheckPosts <-
       rvest::html_text2() %>%
       stringr::str_remove_all("Posted: ")
 
+    link <-
+      current %>%
+      rvest::html_elements(".row4 .postdetails a") %>%
+      rvest::html_attr("onclick") %>%
+      stringr::str_extract(pattern = "[0-9]+") %>%
+      paste(
+        AC,
+        "&view=findpost&p=",
+        .,
+        sep = ""
+      )
+
     data.frame(
       AC = rep(nr, times = length(users)),
       User = users,
       Post = post,
-      Time = time
+      Time = time,
+      Link = link
     )
   }
 
@@ -428,18 +462,39 @@ activityCheckPosts <-
 affiliateLinks <-
   function() {
     recentAffiliate <-
-      read_html("https://simsoccer.jcink.net/index.php?showforum=34") %>%
+      xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=34") %>%
       rvest::html_elements(".topic-row") %>%
-      rvest::html_elements(".row4 [href]")
+      rvest::html_elements(".row4 [href]") %>%
+      rvest::html_attr("href")
 
-    firstCut <- recentAffiliate %>% html_attr("href") %>% str_detect("who_posted") %>% which() %>% nth(1)
+    firstCut <-
+      recentAffiliate %>%
+      stringr::str_detect("who_posted") %>%
+      which() %>%
+      nth(1)
+
+    maxLink <-
+      recentAffiliate[firstCut - 1] %>%
+      stringr::str_extract(pattern = "&showtopic.+")
+
+    minLink <-
+      recentAffiliate[1] %>%
+      stringr::str_extract(pattern = "&showtopic.+")
 
     recentAffiliate <-
-      recentAffiliate %>%
+      paste(
+        "https://simsoccer.jcink.net/index.php?",
+        minLink,
+        paste(
+          "&st=",
+          seq(0, 300, by = 15),
+          sep = ""
+        ),
+        sep = ""
+      ) %>%
       .[
-        1:(firstCut-1)
-      ] %>%
-      rvest::html_attr(name = "href")
+        1:((stringr::str_detect(string = ., pattern = maxLink)) %>% which())
+      ]
 
     return(recentAffiliate)
   }
@@ -458,7 +513,7 @@ affiliatePosts <-
   function(Affiliate) {
 
     ## Reads the current AC link
-    current <- read_html(Affiliate)
+    current <- xml2::read_html(Affiliate)
 
     nr <-
       current %>%
@@ -483,11 +538,24 @@ affiliatePosts <-
       rvest::html_text2() %>%
       stringr::str_remove_all("Posted: ")
 
+    link <-
+      current %>%
+      rvest::html_elements(".row4 .postdetails a") %>%
+      rvest::html_attr("onclick") %>%
+      stringr::str_extract(pattern = "[0-9]+") %>%
+      paste(
+        Affiliate,
+        "&view=findpost&p=",
+        .,
+        sep = ""
+      )
+
     data.frame(
       Affiliate = rep(nr, times = length(users)),
       User = users,
       Post = post,
-      Time = time
+      Time = time,
+      Link = link
     )
   }
 
