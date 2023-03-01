@@ -361,32 +361,52 @@ activityCheckLinks <-
 
     firstCut <-
       recentAC %>%
-      stringr::str_detect("who_posted") %>%
-      which() %>%
-      nth(1)
+      stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
+      unique() %>%
+      nth(3)
 
     maxLink <-
-      recentAC[firstCut - 1] %>%
+      recentAC[
+        stringr::str_detect(recentAC, firstCut) %>%
+          which() %>%
+          nth(1) - 1
+      ] %>%
       stringr::str_extract(pattern = "&showtopic.+")
 
     minLink <-
-      recentAC[1] %>%
+      recentAC[2] %>%
       stringr::str_extract(pattern = "&showtopic.+")
 
-    recentAC <-
-      paste(
+    if(minLink == maxLink){
+      recentAC <- paste(
         "https://simsoccer.jcink.net/index.php?",
         minLink,
-        paste(
-          "&st=",
-          seq(0, 300, by = 15),
-          sep = ""
-        ),
         sep = ""
-      ) %>%
-      .[
-        1:((stringr::str_detect(string = ., pattern = maxLink)) %>% which())
-      ]
+      )
+    } else {
+      recentAC <-
+        paste(
+          "https://simsoccer.jcink.net/index.php?",
+          minLink,
+          paste(
+            "&st=",
+            seq(0, 300, by = 15),
+            sep = ""
+          ),
+          sep = ""
+        ) %>%
+        .[
+          1:((stringr::str_detect(
+            string = .,
+            pattern = paste(maxLink,"$", sep = "")
+          )
+          ) %>%
+            which()
+          )
+        ]
+
+    }
+
 
     return(recentAC)
   }
@@ -414,7 +434,7 @@ activityCheckPosts <-
 
     users <-
       current %>%
-      rvest::html_elements(".normalname span") %>%
+      rvest::html_elements(".normalname") %>%
       rvest::html_text2()
 
     post <-
@@ -469,32 +489,51 @@ affiliateLinks <-
 
     firstCut <-
       recentAffiliate %>%
-      stringr::str_detect("who_posted") %>%
-      which() %>%
-      nth(1)
+      stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
+      unique() %>%
+      nth(3)
 
     maxLink <-
-      recentAffiliate[firstCut - 1] %>%
+      recentAffiliate[
+        stringr::str_detect(recentAffiliate, firstCut) %>%
+          which() %>%
+          nth(1) - 1
+      ] %>%
       stringr::str_extract(pattern = "&showtopic.+")
 
     minLink <-
-      recentAffiliate[1] %>%
+      recentAffiliate[2] %>%
       stringr::str_extract(pattern = "&showtopic.+")
 
-    recentAffiliate <-
-      paste(
+    if(minLink == maxLink){
+      recentAffiliate <- paste(
         "https://simsoccer.jcink.net/index.php?",
         minLink,
-        paste(
-          "&st=",
-          seq(0, 300, by = 15),
-          sep = ""
-        ),
         sep = ""
-      ) %>%
-      .[
-        1:((stringr::str_detect(string = ., pattern = maxLink)) %>% which())
-      ]
+      )
+    } else {
+      recentAffiliate <-
+        paste(
+          "https://simsoccer.jcink.net/index.php?",
+          minLink,
+          paste(
+            "&st=",
+            seq(0, 300, by = 15),
+            sep = ""
+          ),
+          sep = ""
+        ) %>%
+        .[
+          1:((stringr::str_detect(
+            string = .,
+            pattern = paste(maxLink,"$", sep = "")
+          )
+          ) %>%
+            which()
+          )
+        ]
+
+    }
 
     return(recentAffiliate)
   }
