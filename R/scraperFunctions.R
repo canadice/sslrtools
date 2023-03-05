@@ -561,7 +561,7 @@ affiliatePosts <-
 
     users <-
       current %>%
-      rvest::html_elements(".normalname span") %>%
+      rvest::html_elements(".normalname") %>%
       rvest::html_text2()
 
     post <-
