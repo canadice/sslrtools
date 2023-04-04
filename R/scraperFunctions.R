@@ -243,7 +243,7 @@ playerScraper <-
           team =
             dplyr::case_when(
               stringr::str_detect(forum, pattern = "Retired") ~ "Retired",
-              stringr::str_detect(forum, pattern = "Prospect") ~ "Prospect",
+              stringr::str_detect(forum, pattern = "Academy|SSL") ~ "Prospect",
               TRUE ~ "FA"
             )
         )
