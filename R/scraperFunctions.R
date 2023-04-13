@@ -44,7 +44,12 @@ teamLinks <- function(){
       "https://simsoccer.jcink.net/index.php?showforum=124",
       "https://simsoccer.jcink.net/index.php?showforum=126",
       "https://simsoccer.jcink.net/index.php?showforum=133",
-      "https://simsoccer.jcink.net/index.php?showforum=137"
+      "https://simsoccer.jcink.net/index.php?showforum=137",
+      ## Academy
+      "https://simsoccer.jcink.net/index.php?showforum=143",
+      "https://simsoccer.jcink.net/index.php?showforum=144",
+      "https://simsoccer.jcink.net/index.php?showforum=145",
+      "https://simsoccer.jcink.net/index.php?showforum=146"
     ) %>%
     c(
       .,
