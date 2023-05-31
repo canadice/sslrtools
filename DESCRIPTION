@@ -1,7 +1,7 @@
 Package: sslrtools
 Type: Package
 Title: R functions and data sets for the Simulation Soccer League
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: person("Canadice", "SHL", email = "canadice.shl@gmail.com", role = c("aut", "cre"))
 Description: Package provides functions and tools for the Simulation Soccer League. The package has functions for 
   scraping the forum website, analyzing exported data from Football Manager, 

@@ -378,7 +378,7 @@ articleLinks <-
             )
 
           data.frame(
-            Title = rep(title, times = length(users)),
+            Thread = rep(title, times = length(users)),
             User = users,
             Post = post,
             Time = time,
@@ -467,7 +467,7 @@ graphicsLinks <-
             )
 
           data.frame(
-            Title = rep(title, times = length(users)),
+            Thread = rep(title, times = length(users)),
             User = users,
             Post = post,
             Time = time,
@@ -555,7 +555,7 @@ podcastLinks <-
             )
 
           data.frame(
-            Title = rep(title, times = length(users)),
+            Thread = rep(title, times = length(users)),
             User = users,
             Post = post,
             Time = time,
