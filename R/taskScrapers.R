@@ -237,7 +237,7 @@ readPosts <-
       rvest::html_attr("onclick") %>%
       stringr::str_extract(pattern = "[0-9]+") %>%
       paste(
-        Affiliate,
+        page,
         "&view=findpost&p=",
         .,
         sep = ""
