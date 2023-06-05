@@ -680,7 +680,8 @@ predictionLinks <-
               recentPT %>%
                 stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
                 unique() %>%
-                .[openPT]
+                .[openPT] %>%
+                paste0(collapse = "|")
             } else {
               " "
             }
