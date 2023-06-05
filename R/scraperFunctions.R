@@ -60,8 +60,7 @@ teamLinks <- function(){
     "https://simsoccer.jcink.net/index.php?showforum=104" %>%
     c(
       .,
-      paste(., "&st=15", sep = ""),
-      paste(., "&st=30", sep = "")
+      paste(., paste("&st=", seq(15, 600, by = 15), sep = ""), sep = "")
     )
 
 
