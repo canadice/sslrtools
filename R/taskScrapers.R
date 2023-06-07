@@ -1,3 +1,43 @@
+#' Finds open threads in a forum
+#'
+#' @returns A vector of the open threads
+#'
+openThreads <- function(forum){
+  open <-
+    forum %>%
+    rvest::html_elements(".topic-row") %>%
+    rvest::html_elements(".t_img [src]") %>%
+    rvest::html_attr("src") %>%
+    stringr::str_detect("topic_locked") %>%
+    !.
+
+  recent <-
+    forum %>%
+    rvest::html_elements(".topic-row") %>%
+    rvest::html_elements(".row4 [href]") %>%
+    rvest::html_attr("href") %>%
+    stringr::str_remove_all(pattern = "s=[0-9a-z]+")
+
+  recent[
+    recent %>%
+      stringr::str_detect(
+        pattern =
+          if(any(open)){
+            recent %>%
+              stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
+              unique() %>%
+              .[open] %>%
+              paste0(collapse = "|")
+          } else {
+            " "
+          }
+      )
+  ] %>%
+    .[!stringr::str_detect(string = ., pattern = "&st=0")] %>%
+    return()
+}
+
+
 #' Scrapes most recent AC Thread
 #'
 #' @export
@@ -9,62 +49,10 @@
 activityCheckLinks <-
   function() {
     ## The url to the Activity Check forum
-    recentAC <-
-      xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=7") %>%
-      rvest::html_elements(".topic-row") %>%
-      rvest::html_elements(".row4 [href]") %>%
-      rvest::html_attr("href")
+    forum <-
+      xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=7")
 
-    firstCut <-
-      recentAC %>%
-      stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
-      unique() %>%
-      dplyr::nth(3)
-
-    maxLink <-
-      recentAC[
-        stringr::str_detect(recentAC, firstCut) %>%
-          which() %>%
-          dplyr::nth(1) - 1
-      ] %>%
-      stringr::str_extract(pattern = "&showtopic.+")
-
-    minLink <-
-      recentAC[2] %>%
-      stringr::str_extract(pattern = "&showtopic.+")
-
-    if(minLink == maxLink){
-      recentAC <- paste(
-        "https://simsoccer.jcink.net/index.php?",
-        minLink,
-        sep = ""
-      )
-    } else {
-      recentAC <-
-        paste(
-          "https://simsoccer.jcink.net/index.php?",
-          minLink,
-          paste(
-            "&st=",
-            seq(0, 300, by = 15),
-            sep = ""
-          ),
-          sep = ""
-        ) %>%
-        .[
-          1:((stringr::str_detect(
-            string = .,
-            pattern = paste(maxLink,"$", sep = "")
-          )
-          ) %>%
-            which()
-          )
-        ]
-
-    }
-
-
-    return(recentAC)
+    return(openThreads(forum))
   }
 
 #' Scrapes all ACs and
@@ -137,61 +125,10 @@ activityCheckPosts <-
 
 affiliateLinks <-
   function() {
-    recentAffiliate <-
-      xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=34") %>%
-      rvest::html_elements(".topic-row") %>%
-      rvest::html_elements(".row4 [href]") %>%
-      rvest::html_attr("href")
+    forum <-
+      xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=34")
 
-    firstCut <-
-      recentAffiliate %>%
-      stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
-      unique() %>%
-      dplyr::nth(3)
-
-    maxLink <-
-      recentAffiliate[
-        stringr::str_detect(recentAffiliate, firstCut) %>%
-          which() %>%
-          dplyr::nth(1) - 1
-      ] %>%
-      stringr::str_extract(pattern = "&showtopic.+")
-
-    minLink <-
-      recentAffiliate[2] %>%
-      stringr::str_extract(pattern = "&showtopic.+")
-
-    if(minLink == maxLink){
-      recentAffiliate <- paste(
-        "https://simsoccer.jcink.net/index.php?",
-        minLink,
-        sep = ""
-      )
-    } else {
-      recentAffiliate <-
-        paste(
-          "https://simsoccer.jcink.net/index.php?",
-          minLink,
-          paste(
-            "&st=",
-            seq(0, 300, by = 15),
-            sep = ""
-          ),
-          sep = ""
-        ) %>%
-        .[
-          1:((stringr::str_detect(
-            string = .,
-            pattern = paste(maxLink,"$", sep = "")
-          )
-          ) %>%
-            which()
-          )
-        ]
-
-    }
-
-    return(recentAffiliate)
+    return(openThreads(forum))
   }
 
 
@@ -229,7 +166,9 @@ readPosts <-
       current %>%
       rvest::html_elements(".row4 .postdetails") %>%
       rvest::html_text2() %>%
-      stringr::str_remove_all("Posted: ")
+      stringr::str_remove_all("Posted: |Posted on:|,") %>%
+      stringr::str_trim() %>%
+      lubridate::as_datetime(format = "%b %d %Y %H:%M %p")
 
     link <-
       current %>%
@@ -329,61 +268,14 @@ articleLinks <-
 
     articles <-
       xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=31") %>%
-      rvest::html_elements(".topic-row") %>%
-      rvest::html_elements(".row4 [href]") %>%
-      rvest::html_attr("href") %>%
-      stringr::str_remove_all(pattern = "s=[0-9a-z]+")
+      openThreads()
 
     articles <-
       articles %>%
       lapply(
         X = .,
         FUN = function(x){
-          current <- xml2::read_html(x)
-
-          title <-
-            current %>%
-            rvest::html_elements(".topic-title") %>%
-            rvest::html_text2()
-
-          users <-
-            current %>%
-            rvest::html_elements(".normalname") %>%
-            rvest::html_text2()
-
-          post <-
-            current %>%
-            rvest::html_elements(".postcolor") %>%
-            rvest::html_text2() %>%
-            stringr::str_remove_all(pattern = "emo&:[a-z]+:endemo") %>%
-            stringr::str_squish()
-
-          time <-
-            current %>%
-            rvest::html_elements(".row4 .postdetails") %>%
-            rvest::html_text2() %>%
-            stringr::str_remove_all("Posted on: |,") %>%
-            lubridate::as_datetime(format = "%b %d %Y %H:%M %p")
-
-          link <-
-            current %>%
-            rvest::html_elements(".row4 .postdetails a") %>%
-            rvest::html_attr("onclick") %>%
-            stringr::str_extract(pattern = "[0-9]+") %>%
-            paste(
-              x,
-              "&view=findpost&p=",
-              .,
-              sep = ""
-            )
-
-          data.frame(
-            Thread = rep(title, times = length(users)),
-            User = users,
-            Post = post,
-            Time = time,
-            Link = link
-          )
+          readPosts(x)
         }
       ) %>%
       do.call(
@@ -428,51 +320,7 @@ graphicsLinks <-
       lapply(
         X = .,
         FUN = function(x){
-          current <- xml2::read_html(x)
-
-          title <-
-            current %>%
-            rvest::html_elements(".topic-title") %>%
-            rvest::html_text2()
-
-          users <-
-            current %>%
-            rvest::html_elements(".normalname") %>%
-            rvest::html_text2()
-
-          post <-
-            current %>%
-            rvest::html_elements(".postcolor") %>%
-            rvest::html_text2() %>%
-            stringr::str_remove_all(pattern = "emo&:[a-z]+:endemo") %>%
-            stringr::str_squish()
-
-          time <-
-            current %>%
-            rvest::html_elements(".row4 .postdetails") %>%
-            rvest::html_text2() %>%
-            stringr::str_remove_all("Posted on: |,") %>%
-            lubridate::as_datetime(format = "%b %d %Y %H:%M %p")
-
-          link <-
-            current %>%
-            rvest::html_elements(".row4 .postdetails a") %>%
-            rvest::html_attr("onclick") %>%
-            stringr::str_extract(pattern = "[0-9]+") %>%
-            paste(
-              x,
-              "&view=findpost&p=",
-              .,
-              sep = ""
-            )
-
-          data.frame(
-            Thread = rep(title, times = length(users)),
-            User = users,
-            Post = post,
-            Time = time,
-            Link = link
-          )
+          readPosts(x)
         }
       ) %>%
       do.call(
@@ -516,51 +364,7 @@ podcastLinks <-
       lapply(
         X = .,
         FUN = function(x){
-          current <- xml2::read_html(x)
-
-          title <-
-            current %>%
-            rvest::html_elements(".topic-title") %>%
-            rvest::html_text2()
-
-          users <-
-            current %>%
-            rvest::html_elements(".normalname") %>%
-            rvest::html_text2()
-
-          post <-
-            current %>%
-            rvest::html_elements(".postcolor") %>%
-            rvest::html_text2() %>%
-            stringr::str_remove_all(pattern = "emo&:[a-z]+:endemo") %>%
-            stringr::str_squish()
-
-          time <-
-            current %>%
-            rvest::html_elements(".row4 .postdetails") %>%
-            rvest::html_text2() %>%
-            stringr::str_remove_all("Posted on: |,") %>%
-            lubridate::as_datetime(format = "%b %d %Y %H:%M %p")
-
-          link <-
-            current %>%
-            rvest::html_elements(".row4 .postdetails a") %>%
-            rvest::html_attr("onclick") %>%
-            stringr::str_extract(pattern = "[0-9]+") %>%
-            paste(
-              x,
-              "&view=findpost&p=",
-              .,
-              sep = ""
-            )
-
-          data.frame(
-            Thread = rep(title, times = length(users)),
-            User = users,
-            Post = post,
-            Time = time,
-            Link = link
-          )
+          readPosts(x)
         }
       ) %>%
       do.call(
@@ -587,61 +391,10 @@ podcastLinks <-
 trainingCampLinks <-
   function() {
     ## The url to the Training Camp forum
-    recentTC <-
-      xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=9") %>%
-      rvest::html_elements(".topic-row") %>%
-      rvest::html_elements(".row4 [href]") %>%
-      rvest::html_attr("href")
+    forum <-
+      xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=9")
 
-    firstCut <-
-      recentTC %>%
-      stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
-      unique() %>%
-      dplyr::nth(2)
-
-    maxLink <-
-      recentTC[
-        stringr::str_detect(recentTC, firstCut) %>%
-          which() %>%
-          dplyr::nth(1) - 1
-      ] %>%
-      stringr::str_extract(pattern = "&showtopic.+")
-
-    minLink <-
-      recentTC[1] %>%
-      stringr::str_extract(pattern = "&showtopic.+")
-
-    if(minLink == maxLink){
-      recentTC <- paste(
-        "https://simsoccer.jcink.net/index.php?",
-        minLink,
-        sep = ""
-      )
-    } else {
-      recentTC <-
-        paste(
-          "https://simsoccer.jcink.net/index.php?",
-          minLink,
-          paste(
-            "&st=",
-            seq(0, 300, by = 15),
-            sep = ""
-          ),
-          sep = ""
-        ) %>%
-        .[
-          1:((stringr::str_detect(
-            string = .,
-            pattern = paste(maxLink,"$", sep = "")
-          )
-          ) %>%
-            which()
-          )
-        ]
-
-    }
-
-    return(recentTC)
+    return(openThreads(forum))
   }
 
 #' Scrapes the predictions
@@ -657,37 +410,7 @@ predictionLinks <-
     forum <-
       xml2::read_html("https://simsoccer.jcink.net/index.php?showforum=10")
 
-    openPT <-
-      forum %>%
-      rvest::html_elements(".topic-row") %>%
-      rvest::html_elements(".t_img [src]") %>%
-      rvest::html_attr("src") %>%
-      stringr::str_detect("topic_locked") %>%
-      !.
-
-    recentPT <-
-      forum %>%
-      rvest::html_elements(".topic-row") %>%
-      rvest::html_elements(".row4 [href]") %>%
-      rvest::html_attr("href") %>%
-      stringr::str_remove_all(pattern = "s=[0-9a-z]+")
-
-    recentPT[
-      recentPT %>%
-        stringr::str_detect(
-          pattern =
-            if(any(openPT)){
-              recentPT %>%
-                stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
-                unique() %>%
-                .[openPT] %>%
-                paste0(collapse = "|")
-            } else {
-              " "
-            }
-
-        )
-    ] %>%
+    openThreads(forum) %>%
       return()
 
   }
