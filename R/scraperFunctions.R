@@ -254,11 +254,11 @@ playerScraper <-
                     "Academy",
                     paste("SSL", c("Red", "Blue", "Green", "Orange"), sep = " ") %>%
                       paste(collapse = "|"),
-                    sep = "|") ~ "Prospect",
+                    sep = "|")
+                ) ~ "Prospect",
               TRUE ~ "FA"
               )
-            )
-        )
+          )
     }
 
     postData$Team <- playerTeam %>% unname() %>% unlist()
