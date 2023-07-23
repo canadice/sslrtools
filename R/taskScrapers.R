@@ -18,22 +18,53 @@ openThreads <- function(forum){
     rvest::html_attr("href") %>%
     stringr::str_remove_all(pattern = "s=[0-9a-z]+")
 
-  recent[
-    recent %>%
-      stringr::str_detect(
-        pattern =
-          if(any(open)){
-            recent %>%
-              stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
-              unique() %>%
-              .[open] %>%
-              paste0(collapse = "|")
-          } else {
-            " "
-          }
-      )
-  ] %>%
-    .[!stringr::str_detect(string = ., pattern = "&st=0")] %>%
+  current <-
+    recent[
+      recent %>%
+        stringr::str_detect(
+          pattern =
+            if(any(open)){
+              recent %>%
+                stringr::str_extract(pattern = "&showtopic=[0-9]+") %>%
+                unique() %>%
+                .[open] %>%
+                paste0(collapse = "|")
+            } else {
+              " "
+            }
+        )
+    ]
+
+  current <-
+    split(current, f = stringr::str_extract(current, pattern = "showtopic=[0-9]+"))
+
+  links <- function(current){
+    if(any(current %>% stringr::str_detect("st=[0-9]+"))){
+      currentPages <-
+        current %>%
+        stringr::str_extract_all(pattern = "st=[0-9]+", simplify = TRUE) %>%
+        stringr::str_extract_all(pattern = "[0-9]+", simplify = TRUE) %>%
+        stringi::stri_remove_empty_na() %>%
+        as.numeric()
+
+      paste(
+        current[1], "&st=",
+        seq(
+          from = currentPages[1],
+          to = currentPages[length(currentPages)],
+          by = 15
+        ),
+        sep = ""
+      ) %>%
+        return()
+    } else {
+      return(current)
+    }
+  }
+
+  lapply(current, FUN = links) %>%
+    unlist() %>%
+    unname() %>%
     return()
 }
 
