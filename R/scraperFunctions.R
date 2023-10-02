@@ -214,7 +214,7 @@ playerScraper <-
       as.numeric()
 
     playerTeam <-
-      teamInfo %>%
+      teamData %>%
       select(
         team
       ) %>%
@@ -227,7 +227,7 @@ playerScraper <-
           .[length(.)] %>%
           stringr::str_detect(
             ## Takes team information from a separate data set
-            pattern = teamInfo$team
+            pattern = teamData$team
           ) %>%
           which()
       )
