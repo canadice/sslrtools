@@ -214,7 +214,7 @@ playerScraper <-
       as.numeric()
 
     playerTeam <-
-      teamData %>%
+      teamInfo %>%
       select(
         team
       ) %>%
@@ -223,9 +223,11 @@ playerScraper <-
           rvest::html_elements("#navstrip") %>%
           rvest::html_text() %>%
           stringr::str_squish() %>%
+          stringr::str_split(pattern = "-->", simplify = TRUE) %>%
+          .[length(.)] %>%
           stringr::str_detect(
             ## Takes team information from a separate data set
-            pattern = teamData$team
+            pattern = teamInfo$team
           ) %>%
           which()
       )
