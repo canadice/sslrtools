@@ -6,57 +6,73 @@
 teamLinks <- function(){
 
   prospectForum <-
-    "https://simsoccer.jcink.net/index.php?showforum=61" %>%
+    "https://forum.simulationsoccer.com/forumdisplay.php?fid=76" %>%
     c(
       .,
-      paste(., "&st=15", sep = ""),
-      paste(., "&st=30", sep = ""),
-      paste(., "&st=45", sep = ""),
-      paste(., "&st=60", sep = ""),
-      paste(., "&st=75", sep = "")
+      paste(., "&page=2", sep = ""),
+      paste(., "&page=3", sep = ""),
+      paste(., "&page=4", sep = ""),
+      paste(., "&page=5", sep = ""),
+      paste(., "&page=6", sep = "")
     )
 
   faForum <-
-    "https://simsoccer.jcink.net/index.php?showforum=63" %>%
+    "https://forum.simulationsoccer.com/forumdisplay.php?fid=78" %>%
     c(
       .,
-      paste(., paste("&st=", seq(15, 600, by = 15), sep = ""), sep = "")
+      paste(., paste("&page=", 2:20, sep = ""), sep = "")
     )
 
   teamForums <-
     c(
-      "https://simsoccer.jcink.net/index.php?showforum=44",
-      "https://simsoccer.jcink.net/index.php?showforum=45",
-      "https://simsoccer.jcink.net/index.php?showforum=51",
-      "https://simsoccer.jcink.net/index.php?showforum=53",
-      "https://simsoccer.jcink.net/index.php?showforum=55",
-      "https://simsoccer.jcink.net/index.php?showforum=66",
-      "https://simsoccer.jcink.net/index.php?showforum=90",
-      "https://simsoccer.jcink.net/index.php?showforum=48",
-      "https://simsoccer.jcink.net/index.php?showforum=101",
-      "https://simsoccer.jcink.net/index.php?showforum=98",
-      "https://simsoccer.jcink.net/index.php?showforum=117",
-      "https://simsoccer.jcink.net/index.php?showforum=120",
-      "https://simsoccer.jcink.net/index.php?showforum=124",
-      "https://simsoccer.jcink.net/index.php?showforum=126",
-      "https://simsoccer.jcink.net/index.php?showforum=133",
-      "https://simsoccer.jcink.net/index.php?showforum=137",
+      ## Romana
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=148",
+      ## Inter London
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=59",
+      ## Buenos Aires
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=113",
+      ## Athenai
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=60",
+      ## Catalunya
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=105",
+      ## Seoul
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=81",
+      ## Hollywood
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=66",
+      ## Kaapstad
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=139",
+      ## Reykjavik
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=116",
+      ## Laos
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=152",
+      ## Schwarzwälder
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=135",
+      ## Montreal
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=63",
+      ## Tokyo
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=68",
+      ## Cairo
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=70",
+      ## Sao Paulo
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=141",
+      ## Paris
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=132",
       ## Academy
-      "https://simsoccer.jcink.net/index.php?showforum=143",
-      "https://simsoccer.jcink.net/index.php?showforum=144",
-      "https://simsoccer.jcink.net/index.php?showforum=145",
-      "https://simsoccer.jcink.net/index.php?showforum=146"
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=159",
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=160",
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=158",
+      "https://forum.simulationsoccer.com/forumdisplay.php?fid=161"
     ) %>%
     c(
       .,
-      paste(., "&st=15", sep = "")
+      paste(., "&page=2", sep = "")
     )
 
   retiredForum <-
-    "https://simsoccer.jcink.net/index.php?showforum=104" %>%
+    "https://forum.simulationsoccer.com/forumdisplay.php?fid=119" %>%
     c(
       .,
-      paste(., paste("&st=", seq(15, 600, by = 15), sep = ""), sep = "")
+      paste(., paste("&page=", seq(2, 50), sep = ""), sep = "")
     )
 
 
@@ -83,10 +99,10 @@ playerLinkScraper <-
     ### Takes the player link scraped from the team pages
     ##  If it is a complete link with the base url there it scrapes it directly
     ##  For use with teamLinkScraper and playerLinkScraper then only the endings are used, requiring the baseLink addition
-    if(stringr::str_detect(forum, "simsoccer")){
+    if(stringr::str_detect(forum, "simulationsoccer")){
 
     } else{
-      baseLink <- "https://simsoccer.jcink.net/"
+      baseLink <- "https://forum.simulationsoccer.com/"
 
       forum <- paste(baseLink, forum, sep = "")
 
@@ -98,11 +114,11 @@ playerLinkScraper <-
     ### Reads all topics
     playerLinks <-
       topic %>%
-      rvest::html_elements(".topic-row") %>%
-      rvest::html_elements(".row4 a") %>%
+      rvest::html_elements(".inline_row .subject_new") %>%
+      rvest::html_elements("a") %>%
       rvest::html_attr("href") %>%
       .[
-        stringr::str_detect(string = ., pattern = "simsoccer")
+        all(stringr::str_detect(string = ., pattern = "showthread"))
       ]
 
     return(playerLinks)
@@ -122,12 +138,12 @@ playerScraper <-
     ### Takes the player link scraped from the team pages
     ##  If it is a complete link with the base url there it scrapes it directly
     ##  For use with teamLinkScraper and playerLinkScraper then only the endings are used, requiring the baseLink addition
-    if(stringr::str_detect(player, "simsoccer")){
+    if(stringr::str_detect(player, "simulationsoccer")){
 
     } else{
-      baseLink <- "https://simsoccer.jcink.net/"
+      baseLink <- "https://forum.simulationsoccer.com/"
 
-      player <- paste(baseLink, player, sep = "")
+      forum <- paste(baseLink, player, sep = "")
 
     }
 
@@ -136,13 +152,13 @@ playerScraper <-
 
     postData <-
       topic %>%
-      rvest::html_elements(".post2") %>%
-      .[2] %>%
+      rvest::html_elements(".post_body") %>%
+      .[1] %>%
       # ## Changes to dplyr 1.1.0 removes this functionality.
-      # dplyr::nth(2) %>%
-      rvest::html_elements(".postcolor") %>%
+      # dplyr::nth(1) %>%
+      # rvest::html_elements(".postcolor") %>%
       rvest::html_text2() %>%
-      stringr::str_split(pattern = "\\n") %>%
+      stringr::str_split(pattern = "\\n|\\r") %>%
       unlist() %>%
       .[stringr::str_detect(string = ., pattern = ":")] %>%
       .[!stringr::str_detect(string = ., pattern = "edited by")] %>%
@@ -159,27 +175,29 @@ playerScraper <-
 
     postData$Created <-
       topic %>%
-      rvest::html_elements(".postdetails") %>%
+      rvest::html_elements(".post_date") %>%
       rvest::html_text() %>%
       dplyr::nth(1) %>%
       stringr::str_split(pattern = ": |,", simplify = TRUE) %>%
-      .[,2] %>%
+      .[,1] %>%
       # ## Changes in dplyr 1.1.0
       # dplyr::nth(2) %>%
-      {
-        if(packageVersion("lubridate") == '1.9.0') {
-          lubridate::as_date(., format = "bdY")
-        } else {
-          lubridate::as_date(., format = "%b %d %Y")
-        }
-      }
+      # {
+      #   if(packageVersion("lubridate") == '1.9.0') {
+      #     lubridate::as_date(., format = "b-d-Y")
+      #   } else {
+      #     lubridate::as_date(., format = "%d-%b-%Y")
+      #   }
+      # }
+      lubridate::ymd()
 
     postData$Class <-
       topic %>%
-      rvest::html_elements(".topic-title") %>%
+      rvest::html_elements(".thead") %>%
       rvest::html_text() %>%
       stringr::str_extract_all(pattern = "(?<=\\().*?(?=\\))", simplify = TRUE) %>%
-      c()
+      c() %>%
+      stringi::stri_remove_empty_na()
 
     if(!("Preferred Position" %in% colnames(postData))){
       postData$`Preferred Position` <- postData$Position
@@ -194,7 +212,8 @@ playerScraper <-
 
     postData$Position <-
       topic %>%
-      rvest::html_elements(".topic-title") %>%
+      rvest::html_elements(".thead strong") %>%
+      .[3] %>%
       rvest::html_text() %>%
       stringr::str_split(pattern = " - ", simplify = TRUE) %>%
       .[,2] %>%
@@ -204,7 +223,7 @@ playerScraper <-
 
     postData$TPE <-
       topic %>%
-      rvest::html_elements(".topic-desc") %>%
+      rvest::html_elements(".thead small") %>%
       rvest::html_text() %>%
       stringr::str_split(pattern = ":", simplify = TRUE) %>%
       .[,2] %>%
@@ -220,11 +239,13 @@ playerScraper <-
       ) %>%
       dplyr::slice(
         topic %>%
-          rvest::html_elements("#navstrip") %>%
-          rvest::html_text() %>%
+          rvest::html_elements(".navigation") %>%
+          rvest::html_text2() %>%
+          stringr::str_split(pattern = "nav_bit", simplify = TRUE) %>%
+          stringr::str_remove_all(pattern = "start:|nav_sep|end:|_active|nav_dropdown") %>%
           stringr::str_squish() %>%
-          stringr::str_split(pattern = "-->", simplify = TRUE) %>%
-          .[length(.)] %>%
+          stringi::stri_remove_empty_na() %>%
+          .[length(.)-1] %>%
           stringr::str_detect(
             ## Takes team information from a separate data set
             pattern = teamData$team
@@ -234,9 +255,12 @@ playerScraper <-
 
     if((playerTeam %>% nrow()) == 0){
       forum <- topic %>%
-        rvest::html_elements("#navstrip") %>%
-        rvest::html_text() %>%
-        stringr::str_squish()
+        rvest::html_elements(".navigation") %>%
+        rvest::html_text2() %>%
+        stringr::str_split(pattern = "nav_bit", simplify = TRUE) %>%
+        stringr::str_remove_all(pattern = "start:|nav_sep|end:|_active|nav_dropdown") %>%
+        stringr::str_squish() %>%
+        stringi::stri_remove_empty_na()
 
       playerTeam <-
         playerTeam %>%
@@ -244,37 +268,42 @@ playerScraper <-
         dplyr::mutate(
           team =
             dplyr::case_when(
-              stringr::str_detect(forum, pattern = "Retired") ~ "Retired",
-              stringr::str_detect(
-                forum,
-                pattern =
-                  paste(
-                    "Academy",
-                    paste("SSL", c("Red", "Blue", "Green", "Orange"), sep = " ") %>%
-                      paste(collapse = "|"),
-                    sep = "|")
-                ) ~ "Prospect",
+              any(stringr::str_detect(forum, pattern = "Retired")) ~ "Retired",
+              any(stringr::str_detect(forum, pattern = "Academy")) ~ "Prospect",
               TRUE ~ "FA"
-              )
+            )
           )
     }
 
     postData$Team <- playerTeam %>% unname() %>% unlist()
 
+    ## Finds the date of the user's last post on the forum
     userData <-
       topic %>%
-      rvest::html_elements(".normalname a") %>%
+      rvest::html_elements(".post_author strong a") %>%
       .[1] %>%
       # ## Changes in dplyr 1.1.0
       # dplyr::nth(1) %>%
       rvest::html_attr("href") %>%
       xml2::read_html() %>%
-      rvest::html_elements("div.row2") %>%
+      rvest::html_elements(".tborderposts a") %>%
+      rvest::html_attr("href") %>%
+      .[
+        stringr::str_detect(., pattern = "finduser&")
+      ] %>%
+      paste(
+        "https://forum.simulationsoccer.com/",
+        .,
+        sep = ""
+      ) %>%
+      xml2::read_html() %>%
+      rvest::html_elements(".inline_row") %>%
+      .[1] %>%
+      rvest::html_elements(".smalltext") %>%
+      .[3] %>%
       rvest::html_text() %>%
-      .[stringr::str_detect(., pattern = "Last Post")] %>%
-      stringr::str_split(pattern = ": ", simplify = TRUE) %>%
-      .[,2] %>%
-      stringr::str_squish()
+      stringr::str_split(pattern = ": |,", simplify = TRUE) %>%
+      .[,1]
 
     postData$lastPost <- userData
 
@@ -287,16 +316,7 @@ playerScraper <-
             stringr::str_detect(lastPost, pattern = "hour") ~ lubridate::today(),
             stringr::str_detect(lastPost, pattern = "Today") ~ lubridate::today(),
             stringr::str_detect(lastPost, pattern = "Yesterday") ~ lubridate::today()-1,
-            TRUE ~ lastPost %>%
-              stringr::str_split(pattern = ",", simplify = TRUE) %>%
-              .[1] %>%
-              {
-                if(packageVersion("lubridate") == '1.9.0') {
-                  lubridate::as_date(., format = "bdY")
-                } else {
-                  lubridate::as_date(., format = "%b %d %Y")
-                }
-              }
+            TRUE ~ lastPost %>% lubridate::ymd()
           ),
         Active =
           dplyr::case_when(
@@ -307,11 +327,22 @@ playerScraper <-
 
     postData$Username <-
       topic %>%
-      rvest::html_elements(".normalname") %>%
+      rvest::html_elements(".author_information a") %>%
       .[1] %>%
       # ## Changes in dplyr 1.1.0
       # dplyr::nth(1) %>%
       rvest::html_text()
+
+    postData$Userlink <-
+      topic %>%
+      rvest::html_elements(".post_author strong a") %>%
+      .[1] %>%
+      # ## Changes in dplyr 1.1.0
+      # dplyr::nth(1) %>%
+      rvest::html_attr("href")
+
+    postData$Playerlink <-
+      player
 
     postData$`All Traits` <-
       paste(
@@ -351,30 +382,30 @@ playerScraper <-
     return(postData)
   }
 
-
-#' Scrapes the claim threads
 #'
-#' @param thread A link to the claim thread
+#' #' Scrapes the claim threads
+#' #'
+#' #' @param thread A link to the claim thread
+#' #'
+#' #' @export
+#' #'
+#' #' @returns
+#' #' Returns a data frame of all the AC posts, by whom and when
+#' #'
 #'
-#' @export
+#' claimThreadPost <-
+#'   function(thread) {
 #'
-#' @returns
-#' Returns a data frame of all the AC posts, by whom and when
+#'     ## Reads the current AC link
+#'     current <- read_html(thread)
 #'
-
-claimThreadPost <-
-  function(thread) {
-
-    ## Reads the current AC link
-    current <- read_html(thread)
-
-    threads <-
-      current %>%
-      rvest::html_elements(".postcolor") %>%
-      rvest::html_text2()
-
-
-
-
-
-  }
+#'     threads <-
+#'       current %>%
+#'       rvest::html_elements(".postcolor") %>%
+#'       rvest::html_text2()
+#'
+#'
+#'
+#'
+#'
+#'   }
