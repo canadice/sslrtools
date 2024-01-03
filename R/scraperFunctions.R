@@ -1,3 +1,5 @@
+require(dplyr)
+
 #' Function for all links to players
 #'
 #' @export
@@ -143,7 +145,7 @@ playerScraper <-
     } else{
       baseLink <- "https://forum.simulationsoccer.com/"
 
-      forum <- paste(baseLink, player, sep = "")
+      player <- paste(baseLink, player, sep = "")
 
     }
 
